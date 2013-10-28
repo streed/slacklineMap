@@ -7,82 +7,182 @@
 	<![endif]-->
 	<Script src='//api.tiles.mapbox.com/mapbox.js/v1.4.0/mapbox.js'></Script>
 	<Style>
-		#map {
+		.mapContainer {
+			top: 41px;
+			height: 100%;
 			width: 100%;
 			position: absolute;
-			top: 45px;
+		}
+
+		#map {
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
 			bottom: 0;
 		}
-		body {
-			padding-top: 45px;
+
+		#mapTools {
+			top: 41px;
+			height: 100%;
+			width: 33.333%;
+			position: absolute;
+			left: 0%;
+			overflow: scroll;
+		}
+
+		.mapContainer.drawer #map {
+			left: 33.333%;
+		}
+
+		#mapTools.drawer {
+			position: absolute;
+			width: 33.333%;
+			min-width: 300px;
+			z-index: 1;
+		}
+
+		#eventTools {
+			top: 41px;
+			height: 100%;
+			width: 33.333%;
+			position: absolute;
+			left: 66.666%;
+			overflow: scroll;
+		}
+
+		#eventTools.otherDrawer {
+			position: absolute;
+			width: 33.333%;
+			min-width: 300px;
+			z-index: 1;
+		}
+
+		.mapContainer.otherDrawer #map {
+			left: 0%;
+			right: 33.333%;
+		}
+
+		body { 
+			overflow: hidden;
 		}
 	</Style>
 </head>
 
 <body>
-  {{> slackMap}}
+	{{> navBar}}
+	<div id="mapTools">
+		{{> createSlackline}}
+		<div class="row-fluid">
+			<div class="well">
+				<fieldset>
+					<legend>Finding a Slackline</legend>
+					<p>To find slacklines use the spy glass icon on the map and type the location
+					you wish to find a line in. Once hitting enter a list of locations will appear.
+					Select the appropriate location and it will bring you to that locatio and display
+					the lines in that location.</p>
+				</fieldset>
+			</div>
+		</div>
+	</div>
+	<div id="eventTools">
+		{{> eventTools}}
+		<div class="row-fluid">
+			<div class="well">
+				<fieldset>
+					<legend>Finding an Event</legend>
+					<p>To find events use the spy glass icon on the map and type the location
+					you wish to find a line in. Once hitting enter a list of locations will appear.
+					Select the appropriate location and it will bring you to that locatio and display
+					the events in that location.</p>
+				</fieldset>
+			</div>
+		</div>
+	</div>
+	{{> slackMap}}
 </body>
 
 <template name="createSlackline">
-{{#if currentUser}}
-	<div class="span2">
-		<input class="input-medium slacklineName" type="text" placeholder="Slackline Name">
-		<input class="input-medium slacklineGPS" type="text" placeholder="GPS Coordinates">
-		<textarea class="input-medium slacklineDescription" placeholder="Short Description"></textarea>
-		<button class="btn saveSlackline">Save</button>
+<div class="row-fluid">
+	<div class="well">
+		<form>
+			<fieldset>
+				<legend>About</legend>
+				<label>Name</label>
+				<input class="input-large slacklineName" type="text" placeholder="Slackline Name">
+				<label>Location</label>
+				<input class="input-large slacklineGPS" type="text" placeholder="Click on Map at Slackline Location" readonly>
+				<label>Length</label>
+				<input class="input-large slacklineLength" type="text" placeholder="Length With Units">
+				<label>Line Material</label>
+				<select class="slacklineMaterial">
+					<option>Nylon</option>
+					<option>Polyester</option>
+					<option>Dyneema</option>
+					<option>Kevlar</option>
+				</select>
+				<legend>Beta</legend>
+				<label>Description</label>
+				<textarea class="slacklineDescription input-xlarge" placeholder="Short Description"></textarea><br />
+				{{#if currentUser}}
+					<button class="btn saveSlackline">Save</button>
+				{{else}}
+					<button class="btn">Disabled for Non-members</button>
+				{{/if}}
+			</fieldset>
+		</form>
 	</div>
-{{else}}
-	To add a slackline please signup.
-{{/if}}
+</div>
 </template>
 
-<template name="slackMap">
-<div class="navbar navbar-inverse navbar-fixed-top">
+<template name="eventTools">
+<div class="row-fluid">
+	<div class="well">
+		<form>
+			<fieldset>
+				<legend>About</legend>
+				<label>Name</label>
+				<input class="input-large eventName" type="text" placeholder="Event Name">
+				<label>Location</label>
+				<input class="input-large slacklineGPS" type="text" placeholder="Click on Map at Event Location" readonly>
+				<label>Date</label>
+				<input class="input-large eventDate" type="text" placeholder="Event Date">
+				<label>Facebook Link</label>
+				<input class="input-large eventFacebook" type="text" placeholder="Event Facebook">
+				<label>Description</label>
+				<textarea class="eventDescription input-xlarge" placeholder="What's happening?"></textarea><br />
+				{{#if currentUser}}
+					<button class="btn saveEvent">Save</button>
+				{{else}}
+					<button class="btn">Disabled for Non-members</button>
+				{{/if}}
+			</fieldset>
+		</form>
+	</div>
+</div>
+</template>
+
+<template name="navBar">
+<div class="navbar navbar-fixed-top">
 	<div class="navbar-inner">
 		<div class="container-fluid">
 			<a href="#" class="brand">Slackline Map</a>
-			<ul class="nav">
-				<li>{{loginButtons}}</li>
+			<ul class="nav nav-pills pull-left">
+				<li class="navbar-right"><a href="#">{{loginButtons}}</a></li>
+			</ul>
+			<ul class="nav nav-pills pull-right">
+				{{#if currentUser }}
+					<li><a href="#" id="slacklineTools">Slackline Tools</a></li>
+					<li><a href="#" id="eventToolsButton">Event Tools</a></li>
+				{{/if}}
 			</ul>
 		</div>
 	</div>
 </div>
-<div class="container-fluid">
-	<div class="row-fluid">
-		<div class="span2">
-			<div class="row-fluid">
-				<div class="accordion" id="accordion2">
-					<div class="accordion-group">
-						<div class="accordion-heading">
-							<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
-								New Slackline
-							</a>
-						</div>
-						<div id="collapseOne" class="accordion-body collapse in">
-							<div class="accordion-inner">
-								{{> createSlackline}}
-							</div>
-						</div>
-					</div>
-					<div class="accordion-group">
-						<div class="accordion-heading">
-							<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
-								Find Slacklines
-							</a>
-						</div>
-						<div id="collapseTwo" class="accordion-body collapse">
-							<div class="accordion-inner">
-								Find slackline forms
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class="span10">
-			<div id="map">
-			</div>
-		</div>
-	</div>
+</template>
+
+<template name="slackMap">
+<div class="mapContainer">
+	<div id="map"></div>
 </div>
 </template>

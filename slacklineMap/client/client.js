@@ -1,6 +1,23 @@
 Meteor.subscribe( "twitters" );
 
-var addMarker = function( name, description, lat, lng ) {
+var addMarker = function( name, description, lat, lng, length, type, owner ) {
+	if( type === undefined || type == "" )
+		type = "Not Available";
+	if( length === undefined || length == "" )
+		length = "Not Available";
+	if( description === undefined || description === "" )
+		description = "No Beta :<";
+
+	var description = "<fieldset><label>Length: " + length + "</label>" +
+				"<label>Type: " + type + "</label>" +
+				"<label>Beta: " + description + "</label></fieldset>";
+
+	var color = "#f0a";
+	if( Meteor.userId() == owner ) {
+		description += "<a href='#'>Edit</a>";
+		color = "#ffa";
+	}
+
 	L.mapbox.markerLayer({
 		type: "Feature",
 		geometry: {
@@ -11,20 +28,19 @@ var addMarker = function( name, description, lat, lng ) {
 			title: name,
 		description: description,
 		'marker-size': "medium",
-		'marker-color': "#f0a"
+		'marker-color': color
 		}
 	}).addTo( Meteor.map );
 };
 
 
 Deps.autorun( function() {
-	Meteor.subscribe( "slacklines", function() {
-		Slacklines.find().fetch().forEach( function( d ) {
+	Meteor.subscribe( "slacklines", Session.get( "map.bounds" ), function() {
+		Slacklines.find({}).fetch().forEach( function( d ) {
 			var loc = d.loc;
-			addMarker( d.name, d.description, loc.lat, loc.lng );
+			addMarker( d.name, d.description, loc.lat, loc.lng, d.length, d.type, d.owner );
 		});
 	});
-
 });
 
 Meteor.startup( function() {
@@ -34,22 +50,22 @@ Meteor.startup( function() {
 				var map = L.mapbox.map( "map", "streed.map-bu0r9jyo" );
 				Meteor.map = map;
 
+
 				//lets get the location of the user if possible.
 				map.on( "locationfound", function( e ) { 
 					Meteor.map.fitBounds( e.bounds );
-					Session.set( "map", Meteor.map.getCenter() );
+					Session.set( "map.bounds", Meteor.map.getBounds() );
 				});
 
 				map.on( "locationerror", function() {
-					Session.set( "map", Meteor.map.getCenter() );
+					Session.set( "map.bounds", Meteor.map.getBounds() );
 				});
 
 				map.on( "moveend", function() {
-					Session.set( "map", Meteor.map.getCenter() );
+					Session.set( "map.bounds", Meteor.map.getBounds() );
 				});
 
 				map.on( "click", function( e ) {
-					console.log( e );
 					var str = e.latlng.lat + " " + e.latlng.lng;
 					$(".slacklineGPS").val( str );
 				});
@@ -87,5 +103,20 @@ Template.createSlackline.events({
 			addMarker( name, description, lat, lng );
 		} else {
 		}
+	}
+});
+
+Template.navBar.events({
+	"click #slacklineTools": function() {
+		$( ".mapContainer" ).removeClass( "otherDrawer" );
+		$( "#eventTools" ).removeClass( "otherDrawer" );
+		$(".mapContainer").toggleClass( "drawer" );		
+		$("#mapTools").toggleClass( "drawer" );
+	},
+	"click #eventToolsButton": function() {
+		$( ".mapContainer" ).removeClass( "drawer" );
+		$( "#mapTools" ).removeClass( "drawer" );
+		$( ".mapContainer" ).toggleClass( "otherDrawer" );
+		$( "#eventTools" ).toggleClass( "otherDrawer" );
 	}
 });

@@ -8,7 +8,7 @@ Slacklines.allow({
 		if( userId != slackline.owner )
 			return false;
 		
-		var allowed = [ "name", "lat", "lng", "description" ];
+		var allowed = [ "name", "lat", "lng", "description", "length", "type" ];
 		if( _.difference( fields, allowed ).length )
 			return false;
 
@@ -41,6 +41,23 @@ Meteor.methods( {
 		} else {
 			return null;
 		}
+	},
+	createEvent: function( options ) {
+		if( this.userId != null ) {
+			var id = options._id || Random.id();
+			Slacklines.insert( {
+				_id: id,
+				owner: this.userId,
+				loc: { lat: options.lat, lng: options.lng },
+				description: options.description,
+				date: options.date,
+				facebook: options.facebook
+			});
+
+			return id;
+		} else {
+			return null;
+		}
 	}});
 
 displayName = function( user ) {
@@ -56,3 +73,28 @@ var contactEmail = function( user ) {
 		return user.services.facebook.email;
 	return null;
 };
+
+Events = new Meteor.Collection( "events" );
+
+Events.allow({
+	insert: function( userId, e ) {
+		return false;
+	},
+	update: function( userId, e, fields ) {
+		if( userId != e.owner )
+			return false;
+		var allowed = [ "name", "owner", "lat", "lng", "description", "date", "facebook" ];
+		if( _.different( fields, allowed ).length )
+			return false;
+		return true;
+	},
+	remove: function( userId, e ) {
+		return userId == e.owner;
+	}
+});
+
+createEvent = function( options ) {
+	var id = Random.id();
+	Meteor.call( "createEvent", _.extend( { _id: id }, options ) );
+};
+
