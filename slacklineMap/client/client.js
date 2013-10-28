@@ -9,7 +9,7 @@ var addMarker = function( name, description, lat, lng, length, type, owner ) {
 		description = "No Beta :<";
 
 	var description = "<fieldset><label>Length: " + length + "</label>" +
-				"<label>Type: " + type + "</label>" +
+				"<label>Material: " + type + "</label>" +
 				"<label>Beta: " + description + "</label></fieldset>";
 
 	var color = "#f0a";
@@ -93,14 +93,16 @@ Template.createSlackline.events({
 			var name = $( ".slacklineName" ).val();
 			var gps = $( ".slacklineGPS" ).val();
 			var description = $( ".slacklineDescription" ).val();
+			var length = $(".slacklineLength" ).val();
+			var type = $( ".slacklineMaterial" ).find( ":selected" ).text();
 
 			gps = gps.split( " " );
 			var lat = parseFloat( gps[0] );
 			var lng = parseFloat( gps[1] );
 
-			createSlackline( {  name: name, lat: lat, lng: lng, description: description } );
+			createSlackline( {  name: name, lat: lat, lng: lng, description: description, type: type, length: length } );
 
-			addMarker( name, description, lat, lng );
+			addMarker( name, description, lat, lng, length, type, Meteor.userId() );
 		} else {
 		}
 	}
