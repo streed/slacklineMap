@@ -34,6 +34,8 @@ Meteor.methods( {
 				_id: id,
 				owner: this.userId,
 				loc: { lat: options.lat, lng: options.lng },
+				length: options.length,
+				type: options.type,
 				description: options.description,
 				name: options.name });
 
