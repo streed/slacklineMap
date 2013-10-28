@@ -72,7 +72,8 @@
 <body>
 	{{> navBar}}
 	<div id="mapTools">
-		{{> createSlackline}}
+		<div class="slacklineInfo"></div>
+			{{> createSlackline}}
 		<div class="row-fluid">
 			<div class="well">
 				<fieldset>
@@ -84,7 +85,7 @@
 				</fieldset>
 			</div>
 		</div>
-		{{> myslackLines}}
+			{{> myslackLines}}
 	</div>
 	<div id="eventTools">
 		{{> eventTools}}
@@ -149,7 +150,7 @@
 					<label>Name</label>
 					<input class="input-large slacklineName" type="text" value="{{name}}">
 					<label>Location</label>
-					<input class="input-large slacklineGPS" type="text" value="{{loc.lat}} {{loc.lng}}">
+					<input class="input-large slacklineGPS2" type="text" value="{{loc.lat}} {{loc.lng}}">
 					<label>Length</label>
 					<input class="input-large slacklineLength" type="text" value="{{length}}">
 					<label>Line Material</label>

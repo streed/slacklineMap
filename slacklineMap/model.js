@@ -27,7 +27,6 @@ createSlackline = function( options ) {
 };
 
 updateSlackline = function( id, options ) {
-	console.log( options );
 	Meteor.call( "updateSlackline", id, options );
 };
 

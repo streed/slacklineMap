@@ -12,13 +12,13 @@ var addMarker = function( name, description, lat, lng, length, type, owner ) {
 				"<label>Material: " + type + "</label>" +
 				"<label>Beta: " + description + "</label></fieldset>";
 
-	var color = "#f0a";
+	var color = "#FFF";
 	if( Meteor.userId() == owner ) {
 		description += "<a href='#'>Edit</a>";
-		color = "#ffa";
+		color = "#222";
 	}
 
-	L.mapbox.markerLayer({
+	return {
 		type: "Feature",
 		geometry: {
 			type: "Point",
@@ -30,16 +30,19 @@ var addMarker = function( name, description, lat, lng, length, type, owner ) {
 		'marker-size': "medium",
 		'marker-color': color
 		}
-	}).addTo( Meteor.map );
+	};
 };
 
 
 Deps.autorun( function() {
 	Meteor.subscribe( "slacklines", Session.get( "map.bounds" ), function() {
+		var markers = []
 		Slacklines.find({}).fetch().forEach( function( d ) {
 			var loc = d.loc;
-			addMarker( d.name, d.description, loc.lat, loc.lng, d.length, d.type, d.owner );
+			markers.push( addMarker( d.name, d.description, loc.lat, loc.lng, d.length, d.type, d.owner ) );
 		});
+
+		Meteor.map.markerLayer.setGeoJSON( markers );
 	});
 });
 
@@ -50,6 +53,18 @@ Meteor.startup( function() {
 				var map = L.mapbox.map( "map", "streed.map-bu0r9jyo" );
 				Meteor.map = map;
 
+				map.locate();
+
+				map.addControl( L.mapbox.geocoderControl( "streed.map-bu0r9jyo" ) );
+
+				Meteor.autosubscribe( function() {
+					Slacklines.find().observe({
+						added: function( d ) {
+							var loc = d.loc;
+							addMarker( d.name, d.description, loc.lat, loc.lng );
+						}
+					});
+				});
 
 				//lets get the location of the user if possible.
 				map.on( "locationfound", function( e ) { 
@@ -70,18 +85,23 @@ Meteor.startup( function() {
 					$(".slacklineGPS").val( str );
 				});
 
-				map.locate();
+				/*map.markerLayer.on( "click", function( e ) {
+					map.panTo( e.layer.getLatLng() );
 
-				map.addControl( L.mapbox.geocoderControl( "streed.map-bu0r9jyo" ) );
+					e.layer.unbindPopup();
 
-				Meteor.autosubscribe( function() {
-					Slacklines.find().observe({
-						added: function( d ) {
-							var loc = d.loc;
-							addMarker( d.name, d.description, loc.lat, loc.lng );
-						}
-					});
-				});
+					var feature = e.layer.feature;
+					var info = "<legend>" + feature.properties.title + "</legend>" + feature.properties.description;
+					
+					
+					$( ".mapContainer" ).removeClass( "otherDrawer" );
+					$( "#eventTools" ).removeClass( "otherDrawer" );
+					$(".mapContainer").toggleClass( "drawer" );		
+					$("#mapTools").toggleClass( "drawer" );
+					
+					$( ".slacklineInfo" ).html( "<div class='row-fluid'>" + info + "</div>" );
+					
+				});*/
 			}
 		}
 	});
