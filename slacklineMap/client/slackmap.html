@@ -84,6 +84,7 @@
 				</fieldset>
 			</div>
 		</div>
+		{{> myslackLines}}
 	</div>
 	<div id="eventTools">
 		{{> eventTools}}
@@ -133,6 +134,41 @@
 		</form>
 	</div>
 </div>
+</template>
+
+<template name="myslackLines">
+<fieldset>
+	<legend>My Slacklines</legend>
+	<ul>
+		{{#each mySlacklines}}
+		<li>
+		<div class="mySlacklineContainer">
+			<span class="mySlacklineName">{{name}}</span>
+			<div class="mySlackline hidden">
+				<form>
+					<label>Name</label>
+					<input class="input-large slacklineName" type="text" value="{{name}}">
+					<label>Location</label>
+					<input class="input-large slacklineGPS" type="text" value="{{loc.lat}} {{loc.lng}}">
+					<label>Length</label>
+					<input class="input-large slacklineLength" type="text" value="{{length}}">
+					<label>Line Material</label>
+					<select class="slacklineMaterial">
+						<option>Nylon</option>
+						<option>Polyester</option>
+						<option>Dyneema</option>
+						<option>Kevlar</option>
+					</select>
+					<label>Description</label>
+					<textarea class="slacklineDescription input-xlarge" placeholder="Short Description">{{description}}</textarea><br />
+					<input type="hidden" value="{{_id}}">
+					<button class="btn updateSlackline">Update</button>
+				</form>
+			</div>
+		</div>
+		</li>
+		{{/each}}
+	</ul>
 </template>
 
 <template name="eventTools">

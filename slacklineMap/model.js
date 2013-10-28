@@ -8,7 +8,7 @@ Slacklines.allow({
 		if( userId != slackline.owner )
 			return false;
 		
-		var allowed = [ "name", "lat", "lng", "description", "length", "type" ];
+		var allowed = [ "_id", "name", "lat", "lng", "description", "length", "type" ];
 		if( _.difference( fields, allowed ).length )
 			return false;
 
@@ -24,6 +24,11 @@ createSlackline = function( options ) {
 	Meteor.call( "createSlackline", _.extend( { _id: id }, options ) );
 
 	return id;
+};
+
+updateSlackline = function( id, options ) {
+	console.log( options );
+	Meteor.call( "updateSlackline", id, options );
 };
 
 Meteor.methods( {
@@ -60,7 +65,14 @@ Meteor.methods( {
 		} else {
 			return null;
 		}
-	}});
+	},
+	updateSlackline: function( id, options ) {
+		if( this.userId != null ) {
+			Slacklines.update( id, { $set: options } );
+		} else {
+		}
+	}
+});
 
 displayName = function( user ) {
 	if( user.profile && user.profile.name )

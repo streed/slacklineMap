@@ -122,3 +122,26 @@ Template.navBar.events({
 		$( "#eventTools" ).toggleClass( "otherDrawer" );
 	}
 });
+
+Template.myslackLines.mySlacklines = function() {
+	return Slacklines.find( { owner: Meteor.userId() } );
+};
+
+Template.myslackLines.events({
+	"click .mySlacklineName": function( e ) {
+		$(e.srcElement.nextElementSibling).toggleClass( "hidden" );
+	},
+	"click .updateSlackline": function( e ) {
+		var children = e.srcElement.parentElement.children;
+		var name = children[1].value;
+		var loc = children[3].value.split( " " );
+		loc[0] = parseFloat( loc[0] );
+		loc[1] = parseFloat( loc[1] );
+		var length = children[5].value;
+		var type = children[7].value;
+		var description = children[9].value;
+		var id = children[11].value;
+
+		updateSlackline( id, { name: name, lat: loc[0], lng: loc[1], description: description, type: type, length: length } );
+	}
+});
