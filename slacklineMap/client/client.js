@@ -102,6 +102,20 @@ Meteor.startup( function() {
 					$( ".slacklineInfo" ).html( "<div class='row-fluid'>" + info + "</div>" );
 					
 				});*/
+
+				//add the temperature
+				var templerature = L.tileLayer.wms( "http://gis.srh.noaa.gov/arcgis/services/NDFDTemps/MapServer/WMSServer", {
+					format: "image/png",
+					transparent: true,
+				    	layers: 16
+				});//.addTo( map );
+
+				var precipitation = L.tileLayer.wms( "http://nowcoast.noaa.gov/wms/com.esri.wms.Esrimap/obs", {
+					format: "image/png",
+				    	transparent: true,
+				    	layers: "RAS_RIDGE_NEXRAD"
+				}).addTo( map );
+
 			}
 		}
 	});

@@ -9,4 +9,5 @@ preserve-inputs
 twitter-api
 accounts-ui
 accounts-twitter
-accounts-password
+accounts-google
+accounts-facebook
