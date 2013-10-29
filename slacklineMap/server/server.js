@@ -19,6 +19,22 @@ Meteor.publish( "events", function( bounds ) {
 Meteor.startup( function() {
 	if( Meteor.isServer ) {
 		Slacklines._ensureIndex( { loc: "2d" } );
+
+		collectionApi = new CollectionAPI({
+			      authToken: undefined,
+			      apiPath: "slack",
+			      standAlone: true,
+			      sslEnabled: false,
+			      listenPort: 3005,
+			      listenHost: undefined
+		});
+
+		collectionApi.addCollection( Slacklines, "lines", {
+			authToken: undefined,
+			methods: [ "POST", "GET" ]
+		});
+
+		collectionApi.start()
 	}
 });
 

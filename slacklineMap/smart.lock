@@ -2,13 +2,19 @@
   "meteor": {},
   "dependencies": {
     "basePackages": {
-      "twitter-api": {}
+      "twitter-api": {},
+      "collection-api": {}
     },
     "packages": {
       "twitter-api": {
         "git": "https://github.com/Sewdn/meteor-twitter-api.git",
         "tag": "v0.1.0",
         "commit": "c7a0dbfe61f6207d40cc1863c45b179aadadbb6a"
+      },
+      "collection-api": {
+        "git": "https://github.com/crazytoad/meteor-collectionapi.git",
+        "tag": "v0.1.15",
+        "commit": "b62c51f387287726cf3b64077f7bc69604ec2f5e"
       }
     }
   }
