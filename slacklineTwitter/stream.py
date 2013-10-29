@@ -1,7 +1,11 @@
 from tweepy import OAuthHandler, StreamListener, Stream as TweepyStream
 
 import os
+import shlex
 import ConfigParser as configparser
+
+from optparse import OptionParser
+from tweet_parser import TweetParser
 
 class StreamerListener( StreamListener ):
 
@@ -11,11 +15,14 @@ class StreamerListener( StreamListener ):
 			tweet to a Queue.
 		"""
 
-		if tweet.place != None:
-			print tweet.place.full_name
+		tweet = TweetParser.parseString( tweet.text )
+
+		print tweet
+
 
 	def on_error( self, code ):
 		print "Error:", code
+
 
 
 class Streamer( object ):

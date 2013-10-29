@@ -1,5 +1,5 @@
 from stream import Streamer
 
-s = Streamer( None, terms=[ "LOL" ] )
+s = Streamer( None, terms=[ "#slackanator", "#socialslack" ] )
 
 s.start()
