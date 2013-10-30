@@ -1,15 +1,5 @@
 import pyparsing as pp
 
-"""
-tweet ::= hashTagPair+
-hashTagPair ::= hashtag hashtagName
-hashtagName ::= GpsHashTag | LengthHashTag | BetaHashTag
-GpsHashTag ::= gps Float Float
-LengthHashTag ::= length alphanumeric
-BetaHashTag ::= beta alphanumber
-Float ::= -? nums . nums
-
-"""
 Float = pp.Combine( pp.Optional( "-" ) + pp.Word( pp.nums ) + "." + pp.Word( pp.nums ) )
 Float.setParseAction( lambda s, l, t: float( t[0] ) )
 GpsFloatPair = Float + Float
