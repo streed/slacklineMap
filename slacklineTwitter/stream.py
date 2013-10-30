@@ -1,11 +1,11 @@
 from tweepy import OAuthHandler, StreamListener, Stream as TweepyStream
 
 import os
+import json
 import shlex
 import ConfigParser as configparser
 
 from requests import post
-from bson.objectid import ObjectId
 
 from tweet_parser import TweetParser
 
@@ -17,30 +17,40 @@ class StreamerListener( StreamListener ):
 			tweet to a Queue.
 		"""
 		t = TweetParser.parseString( tweet.text )[0]
+		t = t["tweet"]
 
 		data = {}
 
 		if "gps" in t:
 			data["lat"] = t["gps"][0]
 			data["lng"] = t["gps"][1]
+			data["loc"] = { "lat": t["gps"][0], "lng": t["gps"][1] }
+		else:
+			return
 
 		if "beta" in t:
-			data["description"] = t["beta"]
+			data["description"] = str( t["beta"] )
 
 		if "length" in t:
-			data["length"] = t["length"]
+			data["length"] = str( t["length"] )
+		else:
+			data["length"] = "N/A"
 
 		if "type" in t:
-			data["type"] = t["type"]
+			data["type"] = str( t["type"] )
+		else:
+			data["type"] = "N/A"
 
 		if "name" in t:
-			data["name"] = t["name"]
+			data["name"] = str( t["name"] )
 		else:
-			data["name"] = "%s's slackline" % tweet.screen_name
+			data["name"] = str( "%s's slackline" % tweet.author.screen_name )
 
-		res = post( "http://localhost:3005/slack/lines", data=data )
+		data["owner"] = "twitter"
 
-		print res
+		res = post( "http://localhost:3000/slack/lines", data=json.dumps( data ) )
+
+		print res.json()
 
 
 	def on_error( self, code ):

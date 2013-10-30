@@ -21,16 +21,16 @@ Meteor.startup( function() {
 		Slacklines._ensureIndex( { loc: "2d" } );
 
 		collectionApi = new CollectionAPI({
-			      authToken: undefined,
+			      //authToken: undefined,
 			      apiPath: "slack",
-			      standAlone: true,
-			      sslEnabled: false,
-			      listenPort: 3005,
-			      listenHost: undefined
+			      standAlone: false,
+			      sslEnabled: false
+			      //listenPort: 3005,
+			      //listenHost: undefined
 		});
 
 		collectionApi.addCollection( Slacklines, "lines", {
-			authToken: undefined,
+			//authToken: undefined,
 			methods: [ "POST", "GET" ]
 		});
 
