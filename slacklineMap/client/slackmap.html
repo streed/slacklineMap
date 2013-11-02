@@ -172,29 +172,33 @@
 	</ul>
 </template>
 
+<template name="createEvent">
+<form>
+	<fieldset>
+		<legend>About</legend>
+		<label>Name</label>
+		<input class="input-large eventName" type="text" placeholder="Event Name">
+		<label>Location</label>
+		<input class="input-large slacklineGPS" type="text" placeholder="Click on Map at Event Location" readonly>
+		<label>Date</label>
+		<input class="input-large eventDate" type="text" placeholder="Event Date">
+		<label>Facebook Link</label>
+		<input class="input-large eventFacebook" type="text" placeholder="Event Facebook">
+		<label>Description</label>
+		<textarea class="eventDescription input-xlarge" placeholder="What's happening?"></textarea><br />
+		{{#if currentUser}}
+		<button class="btn saveEvent">Save</button>
+		{{else}}
+		<button class="btn">Disabled for Non-members</button>
+		{{/if}}
+	</fieldset>
+</form>
+</template>
+
 <template name="eventTools">
 <div class="row-fluid">
 	<div class="well">
-		<form>
-			<fieldset>
-				<legend>About</legend>
-				<label>Name</label>
-				<input class="input-large eventName" type="text" placeholder="Event Name">
-				<label>Location</label>
-				<input class="input-large slacklineGPS" type="text" placeholder="Click on Map at Event Location" readonly>
-				<label>Date</label>
-				<input class="input-large eventDate" type="text" placeholder="Event Date">
-				<label>Facebook Link</label>
-				<input class="input-large eventFacebook" type="text" placeholder="Event Facebook">
-				<label>Description</label>
-				<textarea class="eventDescription input-xlarge" placeholder="What's happening?"></textarea><br />
-				{{#if currentUser}}
-					<button class="btn saveEvent">Save</button>
-				{{else}}
-					<button class="btn">Disabled for Non-members</button>
-				{{/if}}
-			</fieldset>
-		</form>
+		{{> createEvent}}
 	</div>
 </div>
 </template>

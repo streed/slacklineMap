@@ -1,6 +1,6 @@
-Meteor.subscribe( "twitters" );
+var addSlacklineMarker = function( name, description, lat, lng, length, type, owner ) {
+	colors = [ "#FFF", "#222" ];
 
-var addMarker = function( name, description, lat, lng, length, type, owner ) {
 	if( type === undefined || type == "" )
 		type = "Not Available";
 	if( length === undefined || length == "" )
@@ -12,10 +12,10 @@ var addMarker = function( name, description, lat, lng, length, type, owner ) {
 				"<label>Material: " + type + "</label>" +
 				"<label>Beta: " + description + "</label></fieldset>";
 
-	var color = "#FFF";
+	var color = colors[0];
 	if( Meteor.userId() == owner || Meteor.user().profile.name == owner ) {
 		description += "<a href='#'>Edit</a>";
-		color = "#222";
+		color = colors[1];
 	}
 
 	return {
@@ -33,16 +33,67 @@ var addMarker = function( name, description, lat, lng, length, type, owner ) {
 	};
 };
 
+var addEventMarker = function( name, description, lat, lng, date, facebook, owner ) {
+	colors = [ "#FF0", "#555" ];
+
+	if( date === undefined || date == "" )
+		date = "Not Available";
+	if( facebook === undefined || facebook == "" )
+		facebook = "Not Available";
+	if( description === undefined || description === "" )
+		description = "No Beta :<";
+
+	var description = "<fieldset><label>Name: " + name + "</label>" +
+				"<label>Date: " + date + "</label>" +
+				"<label>Beta: " + description + "</label>" +
+				"<label><a href=\"" + facebook + "\">Facebook Link</a></fieldset>";
+
+	var color = colors[0];
+	if( Meteor.userId() == owner || Meteor.user().profile.name == owner ) {
+		description += "<a href='#'>Edit</a>";
+		color = colors[1];
+	}
+
+	return {
+		type: "Feature",
+		geometry: {
+			type: "Point",
+			coordinates: [ lng, lat ]
+		},
+		properties: { 
+			title: name,
+			description: description,
+			'marker-size': "medium",
+			'marker-color': color
+		}
+	};
+};
 
 Deps.autorun( function() {
 	Meteor.subscribe( "slacklines", Session.get( "map.bounds" ), function() {
-		var markers = []
+		var markers = [];
 		Slacklines.find({}).fetch().forEach( function( d ) {
 			var loc = d.loc;
-			markers.push( addMarker( d.name, d.description, loc.lat, loc.lng, d.length, d.type, d.owner ) );
+			markers.push( addSlacklineMarker( d.name, d.description, loc.lat, loc.lng, d.length, d.type, d.owner ) );
 		});
 
-		Meteor.map.markerLayer.setGeoJSON( markers );
+		//var markers = Meteor.map.markerLater.getGeoJSON().concat( markers );
+		//Meteor.map.markerLayer.setGeoJSON( markers );
+		var slacklineLayer = L.mapbox.markerLayer( markers );
+		slacklineLayer.addTo( Meteor.map );
+	});
+
+	Meteor.subscribe( "slacklineevents", Session.get( "map.bounds" ), function() {
+		var markers = [];
+		SlacklineEvents.find({}).fetch().forEach( function( d ) { 
+			var loc = d.loc;
+			markers.push( addEventMarker( d.name, d.description, loc.lat, loc.lng, d.date, d.facebook, d.owner ) );
+		});
+
+		//var markers = Meteor.map.markerLater.getGeoJSON().concat( markers );
+		//Meteor.map.markerLayer.setGeoJSON( markers );
+		var eventsLayer = L.mapbox.markerLayer( markers );
+		eventsLayer.addTo( Meteor.map );
 	});
 });
 
@@ -61,7 +112,16 @@ Meteor.startup( function() {
 					Slacklines.find().observe({
 						added: function( d ) {
 							var loc = d.loc;
-							addMarker( d.name, d.description, loc.lat, loc.lng );
+							addSlacklineMarker( d.name, d.description, loc.lat, loc.lng );
+						}
+					});
+				});
+
+				Meteor.autosubscribe( function() {
+					SlacklineEvents.find().observe({
+						added: function( d ) {
+							var loc = d.loc;
+							addEventMarker( d.name, d.description, loc.lat, loc.lng );
 						}
 					});
 				});
@@ -130,7 +190,7 @@ Template.createSlackline.events({
 
 			createSlackline( {  name: name, lat: lat, lng: lng, description: description, type: type, length: length } );
 
-			addMarker( name, description, lat, lng, length, type, Meteor.userId() );
+			addSlacklineMarker( name, description, lat, lng, length, type, Meteor.userId() );
 		} else {
 		}
 	}
@@ -171,5 +231,25 @@ Template.myslackLines.events({
 		var id = children[11].value;
 
 		updateSlackline( id, { name: name, lat: loc[0], lng: loc[1], description: description, type: type, length: length } );
+	}
+});
+
+Template.createEvent.events({
+	"click .saveEvent": function() {
+		if( Meteor.user() != undefined ) {
+			var name = $(".eventName" ).val();
+			var gps = $( ".slacklineGPS" ).val();
+			var description = $(".eventDescription" ).val();
+			var date = $(".eventDate" ).val();
+			var facebook = $(".eventFacebook" ).val();
+
+			gps = gps.split( " " );
+			var lat = parseFloat( gps[0] );
+			var lng = parseFloat( gps[1] );
+
+			console.log( createEvent( { name: name, description: description, loc: { lat: lat, lng: lng }, lat: lat, lng: lng, date: date, facebook: facebook } ) );
+			addEventMarker( name, description, lat, lng, date, date, Meteor.userId() );
+		} else {
+		}
 	}
 });
