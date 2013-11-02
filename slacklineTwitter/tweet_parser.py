@@ -1,8 +1,11 @@
 import pyparsing as pp
 
+<<<<<<< HEAD
 """
 #slackanator #gps 37.254379960133264 -80.01617431640625 #length 100ft #beta Awesome is the only word that describes this.
 """
+=======
+>>>>>>> b63ca1d6185c22c73b7c19efb356a8806b78d590
 Float = pp.Combine( pp.Optional( "-" ) + pp.Word( pp.nums ) + "." + pp.Word( pp.nums ) )
 Float.setParseAction( lambda s, l, t: float( t[0] ) )
 GpsFloatPair = Float + Float
@@ -24,6 +27,16 @@ TweetParser.setResultsName( "tweet" )
 TweetParser.setParseAction( lambda s, l, t: { "tweet": dict( ( k, v ) for d in t for ( k, v ) in d.items() ) } )
 
 if __name__ == "__main__":
+	"""
+	Expected output:
+		[{'tweet': {'length': '100ft', 'beta': 'lol this is cool!', 'gps': (-1.0, 1.0)}}]
+		[{'tweet': {'length': '100ft', 'beta': 'Awesome', 'gps': (37.290442925478196, -79.97154235839844)}}]
+		[{'tweet': {'beta': 'This IS AWEOSME!', 'gps': (1.0, 1.0)}}]
+		[{'tweet': {'beta': 'More Awesome', 'length': '100FT', 'gps': (0.0, 0.0)}}]
+		[{'tweet': {'beta': 'More Awesome', 'length': "100'", 'gps': (0.0, 0.0)}}]
+		[{'tweet': {'length': "100'", 'beta': 'More Awesome', 'name': 'This is a cool name', 'gps': (0.0, 0.0)}}]
+		[{'tweet': {'length': "100'", 'beta': 'More Awesome', 'name': 'Another cool name', 'gps': (0.0, 0.0)}}]
+	"""
 	print TweetParser.parseString( "#slackanator #gps -1.0 1.0 #length 100ft #beta lol this is cool!" )
 	print TweetParser.parseString( "#slackanator #gps 37.290442925478196 -79.97154235839844 #length 100ft #beta Awesome" )
 	print TweetParser.parseString( "#slackanator #beta This IS AWEOSME! #gps 1.0 1.0" )
