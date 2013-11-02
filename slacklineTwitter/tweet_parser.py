@@ -19,8 +19,17 @@ TweetParser = Slackanator + pp.OneOrMore( HashTagParam )
 TweetParser.setResultsName( "tweet" )
 TweetParser.setParseAction( lambda s, l, t: { "tweet": dict( ( k, v ) for d in t for ( k, v ) in d.items() ) } )
 
-
 if __name__ == "__main__":
+	"""
+	Expected output:
+		[{'tweet': {'length': '100ft', 'beta': 'lol this is cool!', 'gps': (-1.0, 1.0)}}]
+		[{'tweet': {'length': '100ft', 'beta': 'Awesome', 'gps': (37.290442925478196, -79.97154235839844)}}]
+		[{'tweet': {'beta': 'This IS AWEOSME!', 'gps': (1.0, 1.0)}}]
+		[{'tweet': {'beta': 'More Awesome', 'length': '100FT', 'gps': (0.0, 0.0)}}]
+		[{'tweet': {'beta': 'More Awesome', 'length': "100'", 'gps': (0.0, 0.0)}}]
+		[{'tweet': {'length': "100'", 'beta': 'More Awesome', 'name': 'This is a cool name', 'gps': (0.0, 0.0)}}]
+		[{'tweet': {'length': "100'", 'beta': 'More Awesome', 'name': 'Another cool name', 'gps': (0.0, 0.0)}}]
+	"""
 	print Gps.parseString( "#gps 37.290442925478196 -79.97154235839844" )
 	print Length.parseString( "#length 100m" )
 	print Beta.parseString( "#beta this is a test" )
