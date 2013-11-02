@@ -13,7 +13,7 @@ var addMarker = function( name, description, lat, lng, length, type, owner ) {
 				"<label>Beta: " + description + "</label></fieldset>";
 
 	var color = "#FFF";
-	if( Meteor.userId() == owner ) {
+	if( Meteor.userId() == owner || Meteor.user().profile.name == owner ) {
 		description += "<a href='#'>Edit</a>";
 		color = "#222";
 	}
@@ -22,13 +22,13 @@ var addMarker = function( name, description, lat, lng, length, type, owner ) {
 		type: "Feature",
 		geometry: {
 			type: "Point",
-		coordinates: [ lng, lat ]
+			coordinates: [ lng, lat ]
 		},
 		properties: { 
 			title: name,
-		description: description,
-		'marker-size': "medium",
-		'marker-color': color
+			description: description,
+			'marker-size': "medium",
+			'marker-color': color
 		}
 	};
 };
@@ -103,17 +103,11 @@ Meteor.startup( function() {
 					
 				});*/
 
-				//add the temperature
-				var templerature = L.tileLayer.wms( "http://gis.srh.noaa.gov/arcgis/services/NDFDTemps/MapServer/WMSServer", {
-					format: "image/png",
-					transparent: true,
-				    	layers: 16
-				});//.addTo( map );
-
 				var precipitation = L.tileLayer.wms( "http://nowcoast.noaa.gov/wms/com.esri.wms.Esrimap/obs", {
 					format: "image/png",
 				    	transparent: true,
-				    	layers: "RAS_RIDGE_NEXRAD"
+				    	layers: "RAS_RIDGE_NEXRAD",
+					opacity: 0.5
 				}).addTo( map );
 
 			}

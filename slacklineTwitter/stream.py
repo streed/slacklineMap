@@ -28,30 +28,27 @@ class StreamerListener( StreamListener ):
 		else:
 			return
 
-		if "beta" in t:
+		if "beta" in t or "b" in t:
 			data["description"] = str( t["beta"] )
 
-		if "length" in t:
+		if "length" in t or "l" in t:
 			data["length"] = str( t["length"] )
 		else:
 			data["length"] = "N/A"
 
-		if "type" in t:
+		if "type" in t or "t" in t:
 			data["type"] = str( t["type"] )
 		else:
 			data["type"] = "N/A"
 
-		if "name" in t:
+		if "name" in t or "n" in t:
 			data["name"] = str( t["name"] )
 		else:
 			data["name"] = str( "%s's slackline" % tweet.author.screen_name )
 
-		data["owner"] = "twitter"
+		data["owner"] = tweet.author.screen_name
 
 		res = post( "http://localhost:3000/slack/lines", data=json.dumps( data ) )
-
-		print res.json()
-
 
 	def on_error( self, code ):
 		print "Error:", code
