@@ -1,11 +1,5 @@
 import pyparsing as pp
 
-<<<<<<< HEAD
-"""
-#slackanator #gps 37.254379960133264 -80.01617431640625 #length 100ft #beta Awesome is the only word that describes this.
-"""
-=======
->>>>>>> b63ca1d6185c22c73b7c19efb356a8806b78d590
 Float = pp.Combine( pp.Optional( "-" ) + pp.Word( pp.nums ) + "." + pp.Word( pp.nums ) )
 Float.setParseAction( lambda s, l, t: float( t[0] ) )
 GpsFloatPair = Float + Float
